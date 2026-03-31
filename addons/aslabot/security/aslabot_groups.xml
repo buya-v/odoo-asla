@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_aslabot" model="ir.module.category">
+        <field name="name">AslaBot</field>
+        <field name="description">AI-Powered Odoo Managed Services</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <!-- FR-8.2: Role-based access groups -->
+    <record id="group_asla_user" model="res.groups">
+        <field name="name">AslaBot User</field>
+        <field name="category_id" ref="module_category_aslabot"/>
+        <field name="comment">Can view own client tickets and operation logs.</field>
+    </record>
+
+    <record id="group_asla_operator" model="res.groups">
+        <field name="name">AslaBot Operator</field>
+        <field name="category_id" ref="module_category_aslabot"/>
+        <field name="implied_ids" eval="[(4, ref('group_asla_user'))]"/>
+        <field name="comment">Can view all tickets, execute operations, manage triage.</field>
+    </record>
+
+    <record id="group_asla_admin" model="res.groups">
+        <field name="name">AslaBot Administrator</field>
+        <field name="category_id" ref="module_category_aslabot"/>
+        <field name="implied_ids" eval="[(4, ref('group_asla_operator'))]"/>
+        <field name="comment">Full access: client registry, MCP credentials, security config.</field>
+    </record>
+</odoo>

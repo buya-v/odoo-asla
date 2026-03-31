@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_client_registry_form" model="ir.ui.view">
+        <field name="name">aslabot.client.registry.form</field>
+        <field name="model">aslabot.client.registry</field>
+        <field name="arch" type="xml">
+            <form string="Client">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tickets" type="object"
+                                class="oe_stat_button" icon="fa-ticket">
+                            <field name="ticket_count" widget="statinfo"
+                                   string="Tickets"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Client Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Organization">
+                            <field name="partner_id"/>
+                            <field name="service_tier"/>
+                            <field name="delivery_mode"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Odoo Instance">
+                            <field name="odoo_version"/>
+                            <field name="instance_url" widget="url"/>
+                            <field name="mcp_status"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Contacts">
+                            <field name="contact_ids"/>
+                        </page>
+                        <page string="MCP Connections"
+                              groups="aslabot.group_asla_admin">
+                            <field name="mcp_connection_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="mcp_endpoint_url"/>
+                                    <field name="environment"/>
+                                    <field name="health_status"/>
+                                    <field name="last_health_check"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Technical">
+                            <group>
+                                <field name="installed_modules"/>
+                                <field name="custom_models"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_client_registry_tree" model="ir.ui.view">
+        <field name="name">aslabot.client.registry.tree</field>
+        <field name="model">aslabot.client.registry</field>
+        <field name="arch" type="xml">
+            <tree string="Clients">
+                <field name="name"/>
+                <field name="odoo_version"/>
+                <field name="delivery_mode"/>
+                <field name="service_tier"/>
+                <field name="mcp_status"/>
+                <field name="ticket_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_client_registry" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">aslabot.client.registry</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

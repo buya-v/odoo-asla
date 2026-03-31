@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_aslabot_ticket" model="ir.sequence">
+        <field name="name">AslaBot Ticket</field>
+        <field name="code">aslabot.ticket</field>
+        <field name="prefix">ASLA-</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+</odoo>

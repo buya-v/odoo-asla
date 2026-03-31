@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_aslabot_root"
+              name="AslaBot"
+              web_icon="aslabot,static/description/icon.png"
+              sequence="100"/>
+
+    <!-- Tickets -->
+    <menuitem id="menu_aslabot_tickets"
+              name="Tickets"
+              parent="menu_aslabot_root"
+              action="action_aslabot_ticket"
+              sequence="10"/>
+
+    <!-- Clients -->
+    <menuitem id="menu_aslabot_clients"
+              name="Clients"
+              parent="menu_aslabot_root"
+              action="action_client_registry"
+              sequence="20"/>
+
+    <!-- Operations -->
+    <menuitem id="menu_aslabot_operations"
+              name="Operations"
+              parent="menu_aslabot_root"
+              sequence="30"/>
+
+    <menuitem id="menu_aslabot_operation_logs"
+              name="Operation Logs"
+              parent="menu_aslabot_operations"
+              action="action_operation_log"
+              sequence="10"/>
+
+    <!-- Configuration (admin only) -->
+    <menuitem id="menu_aslabot_config"
+              name="Configuration"
+              parent="menu_aslabot_root"
+              groups="aslabot.group_asla_admin"
+              sequence="90"/>
+</odoo>

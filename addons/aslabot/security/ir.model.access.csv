@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ticket_user,aslabot.ticket.user,model_aslabot_ticket,aslabot.group_asla_user,1,1,1,0
+access_ticket_admin,aslabot.ticket.admin,model_aslabot_ticket,aslabot.group_asla_admin,1,1,1,1
+access_client_registry_user,aslabot.client.registry.user,model_aslabot_client_registry,aslabot.group_asla_user,1,0,0,0
+access_client_registry_operator,aslabot.client.registry.operator,model_aslabot_client_registry,aslabot.group_asla_operator,1,1,0,0
+access_client_registry_admin,aslabot.client.registry.admin,model_aslabot_client_registry,aslabot.group_asla_admin,1,1,1,1
+access_mcp_connection_admin,aslabot.mcp.connection.admin,model_aslabot_mcp_connection,aslabot.group_asla_admin,1,1,1,1
+access_operation_plan_user,aslabot.operation.plan.user,model_aslabot_operation_plan,aslabot.group_asla_user,1,0,0,0
+access_operation_plan_operator,aslabot.operation.plan.operator,model_aslabot_operation_plan,aslabot.group_asla_operator,1,1,1,0
+access_operation_plan_admin,aslabot.operation.plan.admin,model_aslabot_operation_plan,aslabot.group_asla_admin,1,1,1,1
+access_operation_log_user,aslabot.operation.log.user,model_aslabot_operation_log,aslabot.group_asla_user,1,0,0,0
+access_operation_log_operator,aslabot.operation.log.operator,model_aslabot_operation_log,aslabot.group_asla_operator,1,1,1,0
+access_operation_log_admin,aslabot.operation.log.admin,model_aslabot_operation_log,aslabot.group_asla_admin,1,1,1,1

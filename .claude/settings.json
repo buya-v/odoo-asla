@@ -1,0 +1,68 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Write",
+      "Edit",
+      "Bash(ruff *)",
+      "Bash(python -m pytest *)",
+      "Bash(odoo-bin *)",
+      "Bash(git *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(ls *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | bash)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"$(git branch --show-current)\" != \"main\" ] || { echo '{\"block\": true, \"message\": \"Cannot edit files on main branch. Create a feature branch first: git checkout -b feat/FR-X.X-description\"}' >&2; exit 2; }",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q '\\.py$'; then ruff check --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true; fi",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'models/.*\\.py$'; then MODEL_NAME=$(grep -oP \"_name\\s*=\\s*['\\\"]\\K[^'\\\"]+\" \"$CLAUDE_FILE_PATH\" 2>/dev/null | head -1); if [ -n \"$MODEL_NAME\" ]; then ESCAPED=$(echo \"$MODEL_NAME\" | sed 's/\\./\\\\./g'); if ! grep -q \"$ESCAPED\" addons/aslabot/security/ir.model.access.csv 2>/dev/null; then echo \"{\\\"feedback\\\": \\\"WARNING: Model '$MODEL_NAME' has no entry in ir.model.access.csv. Add security rules before committing.\\\"}\" >&2; fi; fi; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "PYTHONPATH": "addons",
+    "RUFF_LINE_LENGTH": "120"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "odoo-dev": {
+      "command": "uvx",
+      "args": ["mcp-server-odoo"],
+      "env": {
+        "ODOO_URL": "http://localhost:8069",
+        "ODOO_DB": "asla_dev",
+        "ODOO_API_KEY": "${ODOO_DEV_API_KEY}"
+      }
+    }
+  }
+}

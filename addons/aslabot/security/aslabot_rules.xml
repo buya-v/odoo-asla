@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FR-8.2: Client users see only their own tickets -->
+    <record id="rule_ticket_client_user" model="ir.rule">
+        <field name="name">Ticket: client sees own</field>
+        <field name="model_id" ref="model_aslabot_ticket"/>
+        <field name="groups" eval="[(4, ref('group_asla_user'))]"/>
+        <field name="domain_force">[('client_id.contact_ids', 'in', user.partner_id.id)]</field>
+    </record>
+
+    <!-- Operators see all tickets -->
+    <record id="rule_ticket_operator" model="ir.rule">
+        <field name="name">Ticket: operator sees all</field>
+        <field name="model_id" ref="model_aslabot_ticket"/>
+        <field name="groups" eval="[(4, ref('group_asla_operator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- FR-8.2: Client users see only their own operation logs -->
+    <record id="rule_operation_log_client_user" model="ir.rule">
+        <field name="name">Operation Log: client sees own</field>
+        <field name="model_id" ref="model_aslabot_operation_log"/>
+        <field name="groups" eval="[(4, ref('group_asla_user'))]"/>
+        <field name="domain_force">[('client_id.contact_ids', 'in', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_operation_log_operator" model="ir.rule">
+        <field name="name">Operation Log: operator sees all</field>
+        <field name="model_id" ref="model_aslabot_operation_log"/>
+        <field name="groups" eval="[(4, ref('group_asla_operator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>
