@@ -2,8 +2,17 @@ import logging
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import html2plaintext
 
 _logger = logging.getLogger(__name__)
+
+# Map ticket category to an odoo-asla-ai advisory role. AslaBot tickets are
+# Odoo tasks, so they default to the Odoo advisory role (OA).
+ROLE_BY_CATEGORY = {
+    'admin': 'OA',
+    'support': 'OA',
+    'customization': 'OA',
+}
 
 # FR-3.2: Risk classification by operation type
 OPERATION_RISK = {
@@ -182,6 +191,16 @@ class AslaTicket(models.Model):
             ),
             message_type='notification',
         )
+        # FR-6.4: post a grounded suggested answer; best-effort so triage still
+        # succeeds if the language service is unavailable.
+        try:
+            self.action_ai_reply()
+        except Exception as exc:  # noqa: BLE001 - AI reply is best-effort
+            _logger.warning('AI reply failed for %s: %s', self.name, exc)
+            self.message_post(
+                body=_('AI reply unavailable: %s', exc),
+                message_type='notification',
+            )
 
     def action_escalate(self, reason=''):
         """FR-3.4: Escalate ticket to human operator."""
@@ -214,3 +233,43 @@ class AslaTicket(models.Model):
         elif self.risk_level == 'high':
             return 'requires_consultation'
         return 'needs_review'
+
+    def _ai_reply_role(self):
+        """Map the ticket category to an odoo-asla-ai role (defaults to OA)."""
+        self.ensure_one()
+        return ROLE_BY_CATEGORY.get(self.category, 'OA')
+
+    def _ai_client_key(self):
+        """Stable per-tenant key for the odoo-asla-ai client corpus."""
+        self.ensure_one()
+        return f"reg{self.client_id.id}"
+
+    def _ai_query(self):
+        """Plain-text query built from the ticket for the language brain."""
+        self.ensure_one()
+        parts = [self.summary or '', html2plaintext(self.description or '')]
+        return '\n'.join(part for part in parts if part).strip()
+
+    def action_ai_reply(self):
+        """Fetch a grounded answer from odoo-asla-ai and post it to the chatter.
+
+        Advisory only: this posts a *suggested* answer for the operator/client and
+        never executes anything on a client Odoo (execution stays in the MCP layer).
+
+        Returns:
+            dict: the raw brain response (answer, sources, tok_s).
+        """
+        self.ensure_one()
+        query = self._ai_query()
+        if not query:
+            raise UserError(_('Ticket has no description to answer.'))
+        result = self.env['aslabot.brain'].answer(
+            self._ai_reply_role(), query, client_id=self._ai_client_key(),
+        )
+        answer = result.get('answer') or _('(no answer)')
+        sources = ', '.join(s.get('source', '') for s in result.get('sources', []))
+        body = _('AI suggested answer:') + '<br/>' + answer
+        if sources:
+            body += '<br/><br/>' + _('Grounded on: %s', sources)
+        self.message_post(body=body, message_type='comment')
+        return result
