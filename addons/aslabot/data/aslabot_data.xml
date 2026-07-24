@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Grant the installing administrator full AslaBot access so the app is
+      visible immediately after install. Without this, every model is group-gated
+      (see ir.model.access.csv) and no user is in any AslaBot group on a fresh
+      install, so the menu is hidden.
+
+      Production deployments manage group membership deliberately via
+      Settings > Users; (4, ...) is idempotent so this only ever adds the group.
+    -->
+    <record id="base.user_admin" model="res.users">
+        <field name="groups_id" eval="[(4, ref('aslabot.group_asla_admin'))]"/>
+    </record>
+</odoo>
