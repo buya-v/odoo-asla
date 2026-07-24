@@ -76,7 +76,7 @@
         <field name="name">aslabot.ticket.tree</field>
         <field name="model">aslabot.ticket</field>
         <field name="arch" type="xml">
-            <tree string="Tickets" decoration-danger="state == 'failed'"
+            <list string="Tickets" decoration-danger="state == 'failed'"
                   decoration-warning="state == 'escalated'"
                   decoration-success="state == 'done'">
                 <field name="name"/>
@@ -88,7 +88,7 @@
                 <field name="priority" widget="priority"/>
                 <field name="state"/>
                 <field name="create_date"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -134,7 +134,7 @@
     <record id="action_aslabot_ticket" model="ir.actions.act_window">
         <field name="name">Tickets</field>
         <field name="res_model">aslabot.ticket</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_aslabot_ticket_search"/>
         <field name="context">{'search_default_filter_in_progress': 1}</field>
     </record>

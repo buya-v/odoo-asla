@@ -36,13 +36,13 @@
                         <page string="MCP Connections"
                               groups="aslabot.group_asla_admin">
                             <field name="mcp_connection_ids">
-                                <tree>
+                                <list>
                                     <field name="name"/>
                                     <field name="mcp_endpoint_url"/>
                                     <field name="environment"/>
                                     <field name="health_status"/>
                                     <field name="last_health_check"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Technical">
@@ -62,20 +62,20 @@
         <field name="name">aslabot.client.registry.tree</field>
         <field name="model">aslabot.client.registry</field>
         <field name="arch" type="xml">
-            <tree string="Clients">
+            <list string="Clients">
                 <field name="name"/>
                 <field name="odoo_version"/>
                 <field name="delivery_mode"/>
                 <field name="service_tier"/>
                 <field name="mcp_status"/>
                 <field name="ticket_count"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_client_registry" model="ir.actions.act_window">
         <field name="name">Clients</field>
         <field name="res_model">aslabot.client.registry</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
