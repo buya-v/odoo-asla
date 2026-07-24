@@ -1,5 +1,5 @@
-from odoo.tests.common import TransactionCase
 from odoo.exceptions import UserError
+from odoo.tests.common import TransactionCase
 
 
 class TestOperationPlan(TransactionCase):
@@ -21,11 +21,18 @@ class TestOperationPlan(TransactionCase):
             'description': '<p>Test</p>',
             'category': 'admin',
         })
+        # Dry-run validation requires an MCP connection (FR-4.2).
+        cls.connection = cls.env['aslabot.mcp.connection'].create({
+            'name': 'Test MCP',
+            'client_id': cls.client.id,
+            'mcp_endpoint_url': 'https://example.test/mcp',
+        })
 
     def _create_plan(self, **kwargs):
         vals = {
             'ticket_id': self.ticket.id,
             'client_id': self.client.id,
+            'connection_id': self.connection.id,
             'target_model': 'res.partner',
             'method': 'search_read',
         }
