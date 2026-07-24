@@ -1,10 +1,56 @@
 import logging
+import re
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from markupsafe import Markup, escape
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools import html2plaintext
 
 _logger = logging.getLogger(__name__)
+
+
+def _md_to_html(text):
+    """Render the model's Markdown answer to safe HTML for the chatter.
+
+    odoo-asla-ai returns Markdown (headings, **bold**, numbered/bullet steps);
+    posting it raw shows the markers literally and collapses newlines. This
+    converts the common cases so the answer is readable in the chatter.
+    """
+    def inline(chunk):
+        s = str(escape(chunk))
+        s = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
+        s = re.sub(r'`(.+?)`', r'<code>\1</code>', s)
+        return s
+
+    parts = []
+    list_tag = None
+    for line in (text or '').split('\n'):
+        heading = re.match(r'^\s*#{1,6}\s+(.*)', line)
+        bullet = re.match(r'^\s*[-*]\s+(.*)', line)
+        numbered = re.match(r'^\s*\d+[.)]\s+(.*)', line)
+        if heading:
+            if list_tag:
+                parts.append(f'</{list_tag}>')
+                list_tag = None
+            parts.append(f'<p><b>{inline(heading.group(1))}</b></p>')
+        elif bullet or numbered:
+            want = 'ul' if bullet else 'ol'
+            if list_tag != want:
+                if list_tag:
+                    parts.append(f'</{list_tag}>')
+                parts.append(f'<{want}>')
+                list_tag = want
+            parts.append(f'<li>{inline((bullet or numbered).group(1))}</li>')
+        else:
+            if list_tag:
+                parts.append(f'</{list_tag}>')
+                list_tag = None
+            if line.strip():
+                parts.append(f'<p>{inline(line)}</p>')
+    if list_tag:
+        parts.append(f'</{list_tag}>')
+    return ''.join(parts)
 
 # Map ticket category to an odoo-asla-ai advisory role. AslaBot tickets are
 # Odoo tasks, so they default to the Odoo advisory role (OA).
@@ -268,8 +314,10 @@ class AslaTicket(models.Model):
         )
         answer = result.get('answer') or _('(no answer)')
         sources = ', '.join(s.get('source', '') for s in result.get('sources', []))
-        body = _('AI suggested answer:') + '<br/>' + answer
+        label = escape(_('AI suggested answer:'))
+        body = f'<p><b>{label}</b></p>' + _md_to_html(answer)
         if sources:
-            body += '<br/><br/>' + _('Grounded on: %s', sources)
-        self.message_post(body=body, message_type='comment')
+            grounded = escape(_('Grounded on: %s', sources))
+            body += f'<p><i>{grounded}</i></p>'
+        self.message_post(body=Markup(body), message_type='comment')
         return result
