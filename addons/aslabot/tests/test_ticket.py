@@ -1,5 +1,5 @@
-from odoo.tests.common import TransactionCase
 from odoo.exceptions import UserError
+from odoo.tests.common import TransactionCase
 
 
 class TestAslaTicket(TransactionCase):
@@ -56,7 +56,7 @@ class TestAslaTicket(TransactionCase):
         """FR-3.3: AI model routed by operation type."""
         ticket_simple = self._create_ticket(
             operation_type='read_only_query')
-        self.assertEqual(ticket_simple.assigned_model_tier, 'qwen_local')
+        self.assertEqual(ticket_simple.assigned_model_tier, 'gemma_local')
 
         ticket_complex = self._create_ticket(
             operation_type='module_customization')

@@ -72,10 +72,10 @@ OPERATION_RISK = {
 
 # FR-3.3: AI model routing by operation type
 AI_TIER_ROUTING = {
-    'read_only_query': 'qwen_local',
-    'configuration_change': 'qwen_local',
-    'data_modification': 'qwen_local',
-    'bug_investigation': 'qwen_local',
+    'read_only_query': 'gemma_local',
+    'configuration_change': 'gemma_local',
+    'data_modification': 'gemma_local',
+    'bug_investigation': 'gemma_local',
     'module_customization': 'claude_api',
     'new_feature_request': 'claude_api',
 }
@@ -147,7 +147,7 @@ class AslaTicket(models.Model):
 
     # FR-3.3: AI model routing
     assigned_model_tier = fields.Selection([
-        ('qwen_local', 'Qwen 3 14B (Local)'),
+        ('gemma_local', 'gemma4:e4b (Local)'),
         ('claude_api', 'Claude Sonnet (API)'),
     ], string='AI Model', compute='_compute_assigned_model_tier', store=True)
 
@@ -212,7 +212,7 @@ class AslaTicket(models.Model):
         """FR-3.3: Route to appropriate AI tier."""
         for ticket in self:
             ticket.assigned_model_tier = AI_TIER_ROUTING.get(
-                ticket.operation_type, 'qwen_local')
+                ticket.operation_type, 'gemma_local')
 
     def _compute_operation_count(self):
         for ticket in self:
@@ -274,7 +274,7 @@ class AslaTicket(models.Model):
     def _determine_response_category(self):
         """FR-1.5: Determine response category based on triage."""
         self.ensure_one()
-        if self.risk_level == 'low' and self.assigned_model_tier == 'qwen_local':
+        if self.risk_level == 'low' and self.assigned_model_tier == 'gemma_local':
             return 'automated'
         elif self.risk_level == 'high':
             return 'requires_consultation'

@@ -17,7 +17,7 @@ Customer Channels                    odoo.asla.mn (Hub)                Client In
                                      │   ┌───▼────┐   │ ──────────────► Client Odoo B
                                      │   │AI Brain│   │                 (MCP Server)
                                      │   │        │   │
-                                     │   │Qwen 14B│   │    Codebase
+                                     │   │gemma4:e4b│   │    Codebase
                                      │   │Claude  │   │ ──────────────► Client C
                                      │   └────────┘   │                 (ZIP download)
                                      └────────────────┘
@@ -46,7 +46,7 @@ The core Odoo module installed on odoo.asla.mn.
 
 ### 2. AI Integration Layer
 
-**Qwen 3 14B (Local)**
+**gemma4:e4b (Local)**
 - Runs on Ollama at `localhost:11434`
 - Handles: read queries, simple config changes, standard admin tasks
 - Connected via `llm_ollama` Odoo module
@@ -60,10 +60,10 @@ The core Odoo module installed on odoo.asla.mn.
 
 **Routing Logic (FR-3.3):**
 ```
-read_only_query       → Qwen (auto-execute)
-configuration_change  → Qwen (confirm-then-execute)
-data_modification     → Qwen (confirm-then-execute)
-bug_investigation     → Qwen first, Claude on failure
+read_only_query       → gemma4:e4b (auto-execute)
+configuration_change  → gemma4:e4b (confirm-then-execute)
+data_modification     → gemma4:e4b (confirm-then-execute)
+bug_investigation     → gemma4:e4b first, Claude on failure
 module_customization  → Claude (human review)
 new_feature_request   → Claude (human review)
 ```
@@ -125,7 +125,7 @@ For clients refusing MCP:
 ### odoo.asla.mn Server
 - Odoo 18.0 Community/Enterprise
 - PostgreSQL 16
-- Ollama + Qwen 3 14B (16GB+ RAM dedicated)
+- Ollama + gemma4:e4b (~10 GB RAM)
 - Python 3.12
 - Ubuntu 24.04 LTS
 

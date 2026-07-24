@@ -8,7 +8,7 @@ See @docs/architecture.md for system architecture and data flows.
 ## Quick Facts
 
 - **Stack**: Odoo 18.0, Python 3.12, PostgreSQL 16
-- **AI Models**: Qwen 3 14B (local/Ollama) for routine, Claude Sonnet API for complex tasks
+- **AI Models**: gemma4:e4b (local/Ollama) for routine, Claude Sonnet API for complex tasks
 - **MCP**: Apexive `llm_mcp_server` for client connections
 - **License**: LGPL-3
 - **Target Platform**: odoo.asla.mn
