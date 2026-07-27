@@ -1,7 +1,7 @@
 import json
 import logging
 
-from odoo import http
+from odoo import SUPERUSER_ID, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -43,8 +43,10 @@ class AslaBotRpc(http.Controller):
         try:
             result = self._dispatch(method, params)
         except _RpcError as exc:
+            request.env.cr.rollback()  # don't persist partial work on failure
             return self._resp(rpc_id, error=(exc.code, exc.message))
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - surface as JSON-RPC error, never 500
+            request.env.cr.rollback()
             _logger.exception('bot rpc %s failed', method)
             return self._resp(rpc_id, error=(ERR_INTERNAL, str(exc)))
         return self._resp(rpc_id, result=result)
@@ -74,8 +76,8 @@ class AslaBotRpc(http.Controller):
         }.get(method)
         if not handler:
             raise _RpcError(ERR_INTERNAL, f'Unknown method: {method}')
-        # sudo(): token-authenticated machine endpoint, no Odoo user session.
-        return handler(request.env(su=True), params)
+        # Superuser env: token-authenticated machine endpoint, no Odoo session.
+        return handler(request.env(user=SUPERUSER_ID), params)
 
     # --- handlers (spec §6) ----------------------------------------------------
 
