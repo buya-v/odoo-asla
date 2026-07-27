@@ -191,6 +191,10 @@ class AslaTicket(models.Model):
     escalated = fields.Boolean(default=False)
     escalation_reason = fields.Text()
 
+    # Origin when raised via an odoo.asla.bot agent (hub-bot-protocol.md)
+    bot_link_id = fields.Many2one('aslabot.bot.link', string='Bot Link', readonly=True)
+    bot_ref = fields.Char(string='Bot Reference', readonly=True, copy=False)
+
     @api.model_create_multi
     def create(self, vals_list):
         """FR-1.5: Assign unique ticket reference on creation."""

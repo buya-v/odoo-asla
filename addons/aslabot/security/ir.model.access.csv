@@ -11,3 +11,5 @@ access_operation_plan_admin,aslabot.operation.plan.admin,model_aslabot_operation
 access_operation_log_user,aslabot.operation.log.user,model_aslabot_operation_log,aslabot.group_asla_user,1,0,0,0
 access_operation_log_operator,aslabot.operation.log.operator,model_aslabot_operation_log,aslabot.group_asla_operator,1,1,1,0
 access_operation_log_admin,aslabot.operation.log.admin,model_aslabot_operation_log,aslabot.group_asla_admin,1,1,1,1
+access_bot_link_operator,aslabot.bot.link.operator,model_aslabot_bot_link,aslabot.group_asla_operator,1,0,0,0
+access_bot_link_admin,aslabot.bot.link.admin,model_aslabot_bot_link,aslabot.group_asla_admin,1,1,1,1

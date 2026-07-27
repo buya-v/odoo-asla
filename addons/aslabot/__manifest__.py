@@ -37,6 +37,7 @@ Features:
         'views/client_registry_views.xml',
         'views/operation_log_views.xml',
         'views/menu_views.xml',
+        'views/bot_link_views.xml',
     ],
     'demo': [],
     'installable': True,
