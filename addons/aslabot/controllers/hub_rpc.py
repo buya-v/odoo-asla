@@ -1,7 +1,7 @@
 import json
 import logging
 
-from odoo import fields, http
+from odoo import SUPERUSER_ID, fields, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -30,7 +30,8 @@ class AslaHubRpc(http.Controller):
         except ValueError:
             return self._resp(None, error=(ERR_INTERNAL, 'Invalid JSON'))
         rpc_id, method, params = req.get('id'), req.get('method'), req.get('params') or {}
-        env = request.env(su=True)  # sudo(): token-authenticated machine endpoint
+        # Superuser env: token-authenticated machine endpoint, no Odoo session.
+        env = request.env(user=SUPERUSER_ID)
 
         try:
             if method == 'session.pair':
@@ -42,7 +43,8 @@ class AslaHubRpc(http.Controller):
                 if params.get('client_id') and params['client_id'] != link.client_key:
                     return self._resp(rpc_id, error=(ERR_UNKNOWN_CLIENT, 'client_id mismatch'))
                 result = self._dispatch(env, link, method, params)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - surface as JSON-RPC error, never 500
+            request.env.cr.rollback()  # don't persist partial work on failure
             _logger.exception('hub rpc %s failed', method)
             return self._resp(rpc_id, error=(ERR_INTERNAL, str(exc)))
         return self._resp(rpc_id, result=result)
@@ -91,15 +93,9 @@ class AslaHubRpc(http.Controller):
         })
         ticket.write({'state': 'triaged',
                       'response_category': ticket._determine_response_category()})
-        # Grounded advisory answer via odoo-asla-ai, then relay to the bot.
-        try:
-            result = ticket.action_ai_reply()
-            link.post_answer(
-                params.get('bot_ref'), result.get('answer', ''),
-                sources=[s.get('source') for s in result.get('sources', [])],
-                response_category=ticket.response_category)
-        except Exception as exc:  # noqa: BLE001 - answer/relay is best-effort
-            _logger.warning('answer/relay for %s failed: %s', ticket.name, exc)
+        # Ack fast. The grounded answer (a ~30s LLM call) is generated and relayed
+        # asynchronously by deliver_bot_answer (cron/queue), not inline — otherwise
+        # the intake request would block past the bot's timeout.
         return {'hub_ref': ticket.name, 'state': ticket.state}
 
     def _resp(self, rpc_id, result=None, error=None):

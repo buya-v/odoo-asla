@@ -284,6 +284,20 @@ class AslaTicket(models.Model):
             return 'requires_consultation'
         return 'needs_review'
 
+    def deliver_bot_answer(self):
+        """Generate the grounded answer and relay it to the originating bot.
+
+        Called out-of-band (cron/queue) so the intake ack isn't blocked on the
+        LLM. No-op for tickets not raised via a bot.
+        """
+        for ticket in self.filtered('bot_link_id'):
+            result = ticket.action_ai_reply()
+            # Render Markdown -> HTML here so the bot can post it directly.
+            ticket.bot_link_id.post_answer(
+                ticket.bot_ref, _md_to_html(result.get('answer', '')),
+                sources=[s.get('source') for s in result.get('sources', [])],
+                response_category=ticket.response_category)
+
     def _ai_reply_role(self):
         """Map the ticket category to an odoo-asla-ai role (defaults to OA)."""
         self.ensure_one()
