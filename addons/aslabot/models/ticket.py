@@ -304,8 +304,14 @@ class AslaTicket(models.Model):
                 _logger.warning('deliver answer for %s failed: %s', ticket.name, exc)
 
     @api.model
-    def _cron_deliver_bot_answers(self, limit=20):
-        """Deliver grounded answers for bot tickets awaiting one (FR-6.4)."""
+    def _cron_deliver_bot_answers(self, limit=3):
+        """Deliver grounded answers for bot tickets awaiting one (FR-6.4).
+
+        Each delivery is a ~30s LLM call, run sequentially, so the per-run limit
+        is small to keep a cron tick bounded; the 1-minute cadence works through
+        any backlog. For higher throughput, move delivery to a queue_job so calls
+        run async/parallel instead of blocking the cron worker.
+        """
         self.search([
             ('bot_link_id', '!=', False),
             ('bot_answer_sent', '=', False),
