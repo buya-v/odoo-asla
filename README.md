@@ -15,7 +15,7 @@ Customer → AslaBot (tickets) → odoo.asla.mn (AI brain) → Client Odoo (via 
 ```
 
 **AI Models:**
-- **Qwen 3 14B** (local, Ollama) — routine operations (~80% of tickets)
+- **gemma4:e4b** (local, Ollama) — routine operations (~80% of tickets)
 - **Claude Sonnet** (API) — complex customization (~20% of tickets)
 
 ## Quick Start

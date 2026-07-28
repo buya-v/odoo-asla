@@ -28,7 +28,7 @@ Full document: see `AslaBot_FRD_v1.0.docx`
 |----|-------------|----------|-------|
 | FR-3.1 | Auto-classify: read-only, config change, data mod, customization, bug, feature | Must | MVP |
 | FR-3.2 | Risk assessment based on operation type and target models | Must | MVP |
-| FR-3.3 | Route to Qwen (routine) or Claude Sonnet (complex) | Must | MVP |
+| FR-3.3 | Route to gemma4:e4b (routine) or Claude Sonnet (complex) | Must | MVP |
 | FR-3.4 | Escalate to human when: low confidence, client request, or high-risk | Must | MVP |
 | FR-3.5 | Detect and link duplicate/related tickets | Should | Phase 2 |
 
@@ -64,7 +64,7 @@ Full document: see `AslaBot_FRD_v1.0.docx`
 | ID | Description | Priority | Phase |
 |----|-------------|----------|-------|
 | FR-7.1 | Post-resolution confirmation (resolved/partial/unresolved) | Must | Phase 2 |
-| FR-7.2 | Auto re-route failed Qwen tickets to Claude Sonnet | Should | Phase 2 |
+| FR-7.2 | Auto re-route failed gemma4:e4b tickets to Claude Sonnet | Should | Phase 2 |
 | FR-7.3 | Track success rates per type, model, client | Could | Phase 3 |
 | FR-7.4 | Feed resolutions back into client KB | Should | Phase 2 |
 

@@ -7,7 +7,7 @@
 AslaBot — AI-Powered Odoo Managed Services
 ===========================================
 
-Receives customer support tickets, triages them via AI (Qwen 3 14B / Claude Sonnet),
+Receives customer support tickets, triages them via AI (gemma4:e4b / Claude Sonnet),
 and executes admin, support, and customization tasks on client Odoo instances
 via MCP (Model Context Protocol) or generates deployable codebase packages.
 

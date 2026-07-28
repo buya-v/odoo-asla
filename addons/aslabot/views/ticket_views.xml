@@ -10,6 +10,9 @@
                     <button name="action_triage" string="Triage"
                             type="object" class="btn-primary"
                             invisible="state != 'draft'"/>
+                    <button name="action_ai_reply" string="AI Answer"
+                            type="object" class="btn-secondary"
+                            invisible="state == 'draft'"/>
                     <button name="action_mark_done" string="Mark Done"
                             type="object" class="btn-success"
                             invisible="state not in ('in_progress', 'executing')"/>
