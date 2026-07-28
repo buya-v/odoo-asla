@@ -1,0 +1,19 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+# RUF012: Odoo model attributes (_inherit, selection lists, _sql_constraints)
+# are framework-managed class attributes, not mutable-default bugs.
+ignore = ["RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]      # Odoo package re-exports (model/test registration)
+"__manifest__.py" = ["B018"]  # Odoo manifest is a bare dict literal
+
+[tool.ruff.lint.isort]
+# Project convention: stdlib -> third-party -> odoo -> local, blank-separated.
+section-order = ["future", "standard-library", "third-party", "odoo", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+odoo = ["odoo"]
