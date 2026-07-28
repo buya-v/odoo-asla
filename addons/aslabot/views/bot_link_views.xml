@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_aslabot_bot_link_form" model="ir.ui.view">
+        <field name="name">aslabot.bot.link.form</field>
+        <field name="model">aslabot.bot.link</field>
+        <field name="arch" type="xml">
+            <form string="Bot Link">
+                <header>
+                    <button name="action_generate_enrollment" string="Generate Enrollment Code"
+                            type="object" class="btn-primary"
+                            invisible="state == 'paired'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Client">
+                            <field name="client_id"/>
+                            <field name="client_key" readonly="1"/>
+                            <field name="protocol_version"/>
+                        </group>
+                        <group string="Agent">
+                            <field name="enrollment_code" readonly="1"
+                                   invisible="state == 'paired'"/>
+                            <field name="bot_endpoint" readonly="1"/>
+                            <field name="last_heartbeat" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_aslabot_bot_link_list" model="ir.ui.view">
+        <field name="name">aslabot.bot.link.list</field>
+        <field name="model">aslabot.bot.link</field>
+        <field name="arch" type="xml">
+            <list string="Bot Links" decoration-success="state == 'paired'">
+                <field name="client_id"/>
+                <field name="client_key"/>
+                <field name="bot_endpoint"/>
+                <field name="state"/>
+                <field name="last_heartbeat"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_aslabot_bot_link" model="ir.actions.act_window">
+        <field name="name">Bot Links</field>
+        <field name="res_model">aslabot.bot.link</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_aslabot_bot_links" name="Bot Links"
+              parent="menu_aslabot_config" action="action_aslabot_bot_link"
+              sequence="20"/>
+</odoo>
