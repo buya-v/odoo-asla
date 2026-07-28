@@ -45,7 +45,7 @@ class AslaBotRpc(http.Controller):
         except _RpcError as exc:
             request.env.cr.rollback()  # don't persist partial work on failure
             return self._resp(rpc_id, error=(exc.code, exc.message))
-        except Exception as exc:  # noqa: BLE001 - surface as JSON-RPC error, never 500
+        except Exception as exc:
             request.env.cr.rollback()
             _logger.exception('bot rpc %s failed', method)
             return self._resp(rpc_id, error=(ERR_INTERNAL, str(exc)))
