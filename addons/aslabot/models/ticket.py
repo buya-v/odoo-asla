@@ -194,6 +194,7 @@ class AslaTicket(models.Model):
     # Origin when raised via an odoo.asla.bot agent (hub-bot-protocol.md)
     bot_link_id = fields.Many2one('aslabot.bot.link', string='Bot Link', readonly=True)
     bot_ref = fields.Char(string='Bot Reference', readonly=True, copy=False)
+    bot_answer_sent = fields.Boolean(default=False, readonly=True, copy=False)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -290,13 +291,26 @@ class AslaTicket(models.Model):
         Called out-of-band (cron/queue) so the intake ack isn't blocked on the
         LLM. No-op for tickets not raised via a bot.
         """
-        for ticket in self.filtered('bot_link_id'):
-            result = ticket.action_ai_reply()
-            # Render Markdown -> HTML here so the bot can post it directly.
-            ticket.bot_link_id.post_answer(
-                ticket.bot_ref, _md_to_html(result.get('answer', '')),
-                sources=[s.get('source') for s in result.get('sources', [])],
-                response_category=ticket.response_category)
+        for ticket in self.filtered(lambda t: t.bot_link_id and not t.bot_answer_sent):
+            try:
+                result = ticket.action_ai_reply()
+                # Render Markdown -> HTML here so the bot can post it directly.
+                ticket.bot_link_id.post_answer(
+                    ticket.bot_ref, _md_to_html(result.get('answer', '')),
+                    sources=[s.get('source') for s in result.get('sources', [])],
+                    response_category=ticket.response_category)
+                ticket.bot_answer_sent = True
+            except Exception as exc:  # noqa: BLE001 - left unsent, retried next cron
+                _logger.warning('deliver answer for %s failed: %s', ticket.name, exc)
+
+    @api.model
+    def _cron_deliver_bot_answers(self, limit=20):
+        """Deliver grounded answers for bot tickets awaiting one (FR-6.4)."""
+        self.search([
+            ('bot_link_id', '!=', False),
+            ('bot_answer_sent', '=', False),
+            ('state', 'not in', ('draft', 'escalated')),
+        ], limit=limit).deliver_bot_answer()
 
     def _ai_reply_role(self):
         """Map the ticket category to an odoo-asla-ai role (defaults to OA)."""

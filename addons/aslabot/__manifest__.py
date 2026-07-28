@@ -33,6 +33,7 @@ Features:
         'security/aslabot_rules.xml',
         'data/ir_sequence_data.xml',
         'data/aslabot_data.xml',
+        'data/ir_cron_data.xml',
         'views/ticket_views.xml',
         'views/client_registry_views.xml',
         'views/operation_log_views.xml',
